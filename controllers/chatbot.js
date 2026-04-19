@@ -1,10 +1,4 @@
 
-const OpenAI = require("openai");
-
-const client = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY
-});
-
 
 const faqs = [
     {
@@ -161,13 +155,9 @@ module.exports.sendChat = async (req, res) => {
 
     } catch (err) {
         console.log(err);
-        if (err.code === "insufficient_quota") {
-            return res.json({
-                reply: "AI service is temporarily unavailable. Please try later."
-            });
-        }
+
         console.log("ERROR:", err.message);
         console.log("FULL ERROR:", err);
-        res.json({ reply: "Something went wrong." });
+        res.json({ reply: "AI service is temporarily unavailable. Please try later." });
     }
 }

@@ -120,9 +120,6 @@ app.use((err, req, res, next) => {
     res.status(statusCode).render("error.ejs", { err });
 })
 
-const client = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY
-});
 
 app.listen(port, () => {
     console.log(`App is listening at ${port}`);
