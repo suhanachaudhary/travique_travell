@@ -22,6 +22,7 @@ const reviewsRouter = require("./routes/review");
 const userRouter = require("./routes/userRouter");
 
 const methodOverriding = require("method-override");
+const OpenAI = require("openai");
 
 //MONGODB URL
 let dbUrl = process.env.MONGODB_URL;
@@ -38,6 +39,7 @@ app.engine("ejs", ejsMate)
 app.set("views", path.join(__dirname, "views"));
 app.use(express.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
+app.use(express.json());
 app.use(express.static(path.join(__dirname, "public/css")));
 app.use(express.static(path.join(__dirname, "public/js")));
 app.use(methodOverriding("_method"));
@@ -90,6 +92,9 @@ app.get("/", (req, res) => {
 
 //user route
 app.use("/", userRouter);
+
+const chatbotRoute = require("./routes/chatbot");
+app.use("/", chatbotRoute);
 //listing routes
 app.use("/listings", listingsRouter);
 //review route
@@ -114,6 +119,10 @@ app.use((err, req, res, next) => {
     let { statusCode = 500, message = "Something went wrong!" } = err;
     res.status(statusCode).render("error.ejs", { err });
 })
+
+const client = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY
+});
 
 app.listen(port, () => {
     console.log(`App is listening at ${port}`);

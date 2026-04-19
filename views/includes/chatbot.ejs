@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+
+    <div id="chat-toggle">💬</div>
+
+    <div id="chat-container">
+        <div id="chat-header">
+            <span>Travique Assistant</span>
+            <button id="close-chat">✖</button>
+        </div>
+
+        <div id="chat-messages"></div>
+
+        <div id="chat-input">
+            <input type="text" id="user-input" placeholder="Type a message..." />
+            <button onclick="sendMessage()">➤</button>
+        </div>
+    </div>
+
+    <script>
+
+        document.addEventListener("DOMContentLoaded", () => {
+
+            const toggleBtn = document.getElementById("chat-toggle");
+            const chatBox = document.getElementById("chat-container");
+            const closeBtn = document.getElementById("close-chat");
+
+
+            // Open chat
+            toggleBtn.addEventListener("click", () => {
+                chatBox.style.display = "flex";
+            });
+
+            // Close chat
+            closeBtn.addEventListener("click", () => {
+                chatBox.style.display = "none";
+            });
+
+            // Welcome message
+            document.getElementById("chat-messages").innerHTML +=
+                `<div class="message bot">Hi 👋 How can I help you?</div>`;
+        });
+
+
+        async function sendMessage() {
+            const input = document.getElementById("user-input");
+            const message = input.value;
+
+            if (!message) return;
+
+            const chatBox = document.getElementById("chat-messages");
+
+            // 👤 User message
+            chatBox.innerHTML += `<div class="message user">${message}</div>`;
+
+            // 🤖 Temporary typing
+            chatBox.innerHTML += `<div class="message bot" id="typing">Typing...</div>`;
+
+            // 🔥 Call backend API
+            const res = await fetch("/chat", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ message })
+            });
+
+            const data = await res.json();
+
+            // remove typing
+            document.getElementById("typing").remove();
+
+            // 🤖 Real AI response
+            chatBox.innerHTML += `<div class="message bot">${data.reply}</div>`;
+
+            chatBox.scrollTop = chatBox.scrollHeight;
+            input.value = "";
+        }
+
+    </script>
+
+</body>
+
+</html>
